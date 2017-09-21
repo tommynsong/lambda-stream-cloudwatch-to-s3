@@ -1,0 +1,23 @@
+{
+  "name": "lambda-cloudwatch-to-s3",
+  "version": "0.1.0",
+  "description": "Lambda Function to Collect CloudWatch Log and write to S3 bucket",
+  "main": "cloudwatch-to-s3.js",
+  "author": {
+    "name": "Tommy Song",
+    "email": "tommy.song@armor.com"
+  },
+  "private": true,
+  "files": [
+    "*.js",
+    "*.json"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "claudia": "^1.4.0",
+    "smoketail": "^0.1.0"
+  },
+  "license": "ISC"
+}
