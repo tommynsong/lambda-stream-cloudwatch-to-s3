@@ -25,7 +25,7 @@ exports.handler = (event, context, callback) => {
     const folder = "CloudWatch";
     var objecttimestamp = new Date();
     const prefix = "CloudWatchLogs_";
-    var key = folder + '/' + objecttimestamp.getFullYear() + '/' + (objecttimestamp.getMonth() +1) + '/' + objecttimestamp.getDate() + '/' + prefix + objecttimestamp + '.log';
+    var key = folder + '/' + objecttimestamp.getFullYear() + '/' + (objecttimestamp.getMonth() +1) + '/' + objecttimestamp.getDate() + '/' + prefix + new Date(objecttimestamp).toISOString() + '.log';
     var params = {
       Bucket: bucket,
       Key: key,
