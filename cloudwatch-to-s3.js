@@ -21,7 +21,7 @@ exports.handler = (event, context, callback) => {
 
   function putEventsToS3(parsedEvents) {
     const finalEvent = parsedEvents.map(JSON.stringify).join('\n');
-    const bucket = "704710118823-aa4aws-cloudwatch";
+    var bucket = process.env.CLOUDWATCH_BUCKET;
     const folder = "CloudWatch";
     var objecttimestamp = new Date();
     const prefix = "CloudWatchLogs_";
