@@ -1,0 +1,4 @@
+node_modules/
+claudia.json
+config.json
+package-lock.json
