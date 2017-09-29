@@ -1,0 +1,11 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: |
+  Lambda Function to near real-time streaming CloudWatch Logs to an S3 bucket
+Resources:
+  cloudwatchStreamToS3:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs4.3
+      Handler: cloudwatchStreamToS3.handler
