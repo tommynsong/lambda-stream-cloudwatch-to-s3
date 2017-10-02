@@ -20,31 +20,38 @@ exports.handler = (event, context, callback) => {
   }
 
   function putEventsToS3(parsedEvents) {
-    const finalEvent = parsedEvents.map(JSON.stringify).join('\n');
+    var finalEvent = parsedEvents.map(JSON.stringify).join('\n')
     var bucket = process.env.CLOUDWATCH_BUCKET;
     const folder = "CloudWatch";
     var objecttimestamp = new Date();
     var region = process.env.AWS_REGION;
     const prefix = "CloudWatchLogs_";
-    var key = folder + '/' + region + '/' + objecttimestamp.getFullYear() + '/' + (objecttimestamp.getMonth() +1) + '/' + objecttimestamp.getDate() + '/' + prefix + new Date(objecttimestamp).toISOString() + '.log';
-    var params = {
-      Bucket: bucket,
-      Key: key,
-      Body: finalEvent,
-    };
-    s3.putObject(params, (err, data) => {
+    var key = folder + '/' + region + '/' + objecttimestamp.getFullYear() + '/' + (objecttimestamp.getMonth() +1) + '/' + objecttimestamp.getDate() + '/' + prefix + new Date(objecttimestamp).toISOString() + 'json.gz';
+    zlib.gzip(finalEvent, (err, result) => {
       if (err) {
-        console.log(err);
-        const message = `Error putting object ${key} to bucket ${bucket}. Make sure they exist and your bucket is in the same region as this function.`;
-        console.log(message);
-        callback(message);
+        callback(err);
       } else {
-        console.log('CONTENT TYPE:', data.ContentType);
-        callback(null, data.ContentType);
+        const binaryObject = result;
+        var params = {
+          Bucket: bucket,
+          ContentType: "application/gzip",
+          Key: key,
+          Body: binaryObject,
+        };
+        s3.putObject(params, (err, data) => {
+          if (err) {
+            console.log(err);
+            const message = `Error putting object ${key} to bucket ${bucket}. Make sure they exist and your bucket is in the same region as this function.`;
+            console.log(message);
+            callback(message);
+          } else {
+            console.log('CONTENT TYPE:', data.ContentType);
+            callback(null, data.ContentType);
+          }
+        });
       }
     });
   }
-
   zlib.gunzip(payload, (error, result) => {
     if (error) {
       callback(error);
