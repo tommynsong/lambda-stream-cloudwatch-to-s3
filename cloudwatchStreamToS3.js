@@ -3,6 +3,7 @@
 const aws = require('aws-sdk');
 const zlib = require('zlib');
 const s3 = new aws.S3({ apiVersion: '2006-03-01' });
+var _ = require('lodash');
 
 // entry point
 exports.handler = (event, context, callback) => {
@@ -20,14 +21,21 @@ exports.handler = (event, context, callback) => {
   }
 
   function putEventsToS3(parsedEvents) {
-    var finalEvent = parsedEvents.map(JSON.stringify).join('\n')
+    var finalEvent = parsedEvents.map(JSON.stringify).join('\n');
     var bucket = process.env.CLOUDWATCH_BUCKET;
     const folder = "CloudWatch";
     var objecttimestamp = new Date();
     var region = process.env.AWS_REGION;
     const prefix = "CloudWatchLogs_";
-    var key = folder + '/' + region + '/' + objecttimestamp.getFullYear() + '/' + (objecttimestamp.getMonth() +1) + '/' + objecttimestamp.getDate() + '/' + prefix + new Date(objecttimestamp).toISOString() + 'json.gz';
-    zlib.gzip(finalEvent, (err, result) => {
+    var arnLists = _.split(context.invokedFunctionArn, ':');
+    var awsAccountId = arnLists[4];
+    var records = {
+      "Records": [
+        finalEvent
+      ]
+    };
+    var key = "AWSLogs" + '/' + awsAccountId + '/' + folder + '/' + region + '/' + objecttimestamp.getFullYear() + '/' + (objecttimestamp.getMonth() +1) + '/' + objecttimestamp.getDate() + '/' + prefix + new Date(objecttimestamp).toISOString() + 'json.gz';
+    zlib.gzip(JSON.stringify(records), (err, result) => {
       if (err) {
         callback(err);
       } else {
@@ -59,7 +67,6 @@ exports.handler = (event, context, callback) => {
       const resultParsed = JSON.parse(result.toString('ascii'));
       const parsedEvents = resultParsed.logEvents.map((logEvent) =>
       parseEvent(logEvent, resultParsed.logGroup, resultParsed.logStream));
-
       putEventsToS3(parsedEvents);
     }
   });
