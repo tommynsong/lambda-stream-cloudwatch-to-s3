@@ -21,30 +21,33 @@ exports.handler = (event, context, callback) => {
   }
 
   function putEventsToS3(parsedEvents) {
+    //console.log('PARSED EVENTS: ', parsedEvents);
     var finalEvent = parsedEvents.map(JSON.stringify).join('\n');
+    //console.log('FINAL EVENTS: ', finalEvent);
     var bucket = process.env.CLOUDWATCH_BUCKET;
     const folder = "CloudWatch";
     var objecttimestamp = new Date();
     var region = process.env.AWS_REGION;
     const prefix = "CloudWatchLogs_";
-    var arnLists = _.split(context.invokedFunctionArn, ':');
-    var awsAccountId = arnLists[4];
+    var awsAccountId = context.invokedFunctionArn.split(':')[4];
     var records = {
-      "Records": [
-        finalEvent
-      ]
+      "Records": parsedEvents
     };
-    var key = "AWSLogs" + '/' + awsAccountId + '/' + folder + '/' + region + '/' + objecttimestamp.getFullYear() + '/' + (objecttimestamp.getMonth() +1) + '/' + objecttimestamp.getDate() + '/' + prefix + new Date(objecttimestamp).toISOString() + 'json.gz';
-    zlib.gzip(JSON.stringify(records), (err, result) => {
+    var body = JSON.stringify(records);
+    //console.log('RECORDS: ', records);
+    //console.log('STRINGIFY:', body);
+    var key = "AWSLogs" + '/' + awsAccountId + '/' + folder + '/' + region + '/' + objecttimestamp.getFullYear() + '/' + (objecttimestamp.getMonth() +1) + '/' + objecttimestamp.getDate() + '/' + prefix + objecttimestamp.toISOString().replace(/-/g,'').replace(/:/g,'') + '.json.gz';
+    zlib.gzip(JSON.stringify(records), function(err, result) {
       if (err) {
         callback(err);
       } else {
-        const binaryObject = result;
+        const binary = result;
         var params = {
           Bucket: bucket,
           ContentType: "application/gzip",
           Key: key,
-          Body: binaryObject,
+          ServerSideEncryption: "AES256",
+          Body: binary,
         };
         s3.putObject(params, (err, data) => {
           if (err) {
@@ -58,7 +61,7 @@ exports.handler = (event, context, callback) => {
           }
         });
       }
-    });
+    });    
   }
   zlib.gunzip(payload, (error, result) => {
     if (error) {
