@@ -6,4 +6,4 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: nodejs6.10
-      Handler: cloudwatchStreamToS3.handler
+      Handler: index.handler

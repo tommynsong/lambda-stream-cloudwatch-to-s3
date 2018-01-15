@@ -1,0 +1,10 @@
+*              text=auto
+.gitignore     eol=lf
+.gitattributes eol=lf
+*.json         eol=lf
+*.md           eol=lf
+*.sh           eol=lf
+*.tf           eol=lf
+*.tfvars       eol=lf
+*.yml          eol=lf
+*.conf         eol=lf

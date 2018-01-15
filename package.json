@@ -1,8 +1,8 @@
 {
-  "name": "lambda-cloudwatch-to-s3",
+  "name": "lambda-stream-cloudwatch-to-s3",
   "version": "0.1.0",
   "description": "Lambda Function to Collect CloudWatch Log and write to S3 bucket",
-  "main": "cloudwatch-to-s3.js",
+  "main": "index.js",
   "author": {
     "name": "Tommy Song",
     "email": "tommy.song@armor.com"
