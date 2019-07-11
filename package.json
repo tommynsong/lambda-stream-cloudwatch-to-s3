@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "claudia": "5.5.0",
-    "smoketail": "0.1.1"
+    "smoketail": "0.2.2"
   },
   "license": "ISC"
 }
