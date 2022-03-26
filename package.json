@@ -16,7 +16,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "claudia": "5.5.0",
+    "claudia": "5.14.1",
     "smoketail": "0.2.2"
   },
   "license": "ISC"
